@@ -10,7 +10,11 @@
     "watch": "parcel -p 8080 watch src/ui/index.html"
   },
   "devDependencies": {
-    "parcel": "^1.12.4",
+    "parcel-bundler": "^1.12.4",
+    "sass": "^1.26.10",
     "typescript": "^3.9.7"
+  },
+  "dependencies": {
+    "phaser": "^3.24.1"
   }
 }

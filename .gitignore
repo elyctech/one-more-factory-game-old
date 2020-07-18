@@ -7,3 +7,6 @@ dist
 
 # VS Code
 .vscode
+
+# Yarn
+yarn-error.log
