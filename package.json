@@ -1,0 +1,16 @@
+{
+  "name": "factory-simulator",
+  "version": "0.1.0",
+  "description": "A factory building simulator",
+  "main": "dist/index.html",
+  "author": "Cyle Ven Dawson <dawsonc623@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "watch": "parcel -p 8080 watch src/ui/index.html"
+  },
+  "devDependencies": {
+    "parcel": "^1.12.4",
+    "typescript": "^3.9.7"
+  }
+}
