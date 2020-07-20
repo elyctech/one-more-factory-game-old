@@ -7,11 +7,13 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "extrude": "node scripts/extrude.js",
     "watch": "parcel -p 8080 watch src/ui/index.html"
   },
   "devDependencies": {
     "parcel-bundler": "^1.12.4",
     "sass": "^1.26.10",
+    "tile-extruder": "^2.0.6",
     "typescript": "^3.9.7"
   },
   "dependencies": {
