@@ -14,6 +14,13 @@ const extrusionAssets = new Map([
     }
   ],
   [
+    `${assetsPath}/environment2.png`,
+    {
+      "tileHeight": 32,
+      "tileWidth": 32
+    }
+  ],
+  [
     `${assetsPath}/objects1.png`,
     {
       "tileHeight": 32,
