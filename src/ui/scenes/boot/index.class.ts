@@ -4,7 +4,7 @@ import {
 
 import environmentImage   from "../../assets/environment-extruded.png";
 import environment2Image  from "../../assets/environment2-extruded.png";
-import objects1Image      from "../../assets/objects1.png";
+import objects1Image      from "../../assets/objects1-extruded.png";
 
 class BootScene extends Scene
 {
@@ -27,7 +27,9 @@ class BootScene extends Scene
       environment2Image,
       {
         "frameHeight" : 32,
-        "frameWidth"  : 32
+        "frameWidth"  : 32,
+        "margin"      : 1,
+        "spacing"     : 2
       }
     );
 
@@ -38,7 +40,9 @@ class BootScene extends Scene
       objects1Image,
       {
         "frameHeight" : 32,
-        "frameWidth"  : 32
+        "frameWidth"  : 32,
+        "margin"      : 1,
+        "spacing"     : 2
       }
     );
   }

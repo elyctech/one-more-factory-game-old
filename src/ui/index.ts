@@ -1,6 +1,5 @@
 import {
-  Game,
-  Scene
+  Game
 } from "phaser";
 
 import BootScene        from "./scenes/boot/index.class";
