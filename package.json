@@ -1,7 +1,7 @@
 {
-  "name": "factory-simulator",
+  "name": "omfg",
   "version": "0.1.0",
-  "description": "A factory building simulator",
+  "description": "One More Factory Game",
   "main": "dist/index.html",
   "author": "Cyle Ven Dawson <dawsonc623@gmail.com>",
   "license": "MIT",
