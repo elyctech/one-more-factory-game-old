@@ -13,7 +13,7 @@ class BootScene extends Scene
     super("boot");
   }
 
-  public preload()
+  public preload() : void
   {
     // Landscape
 
@@ -49,7 +49,7 @@ class BootScene extends Scene
 
   public create() : void
   {
-    this.scene.start("prototype1");
+    this.scene.start("prototype3");
   }
 }
 

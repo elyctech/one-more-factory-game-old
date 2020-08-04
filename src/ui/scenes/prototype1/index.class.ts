@@ -2,12 +2,13 @@ import {
   Scene
 } from "phaser";
 
+import Belt1Structure         from "../../../lib/structure/belt1/index.class";
+import Structure              from "../../../lib/structure/index.type";
+import StructureOrientation   from "../../../lib/structure-orientation/index.enum";
+
+import placedStructureManager from "../../../app/placed-structure-manager";
+
 type Node = "coal" | "empty";
-
-interface Structure
-{
-
-}
 
 interface FrameSet
 {
@@ -26,8 +27,8 @@ interface Animation
 
 interface Blueprint
 {
-  animation     : Animation;
   canBePlaced   : Node[];
+  structureType : string;
 }
 
 interface BuildMenuEntry
@@ -65,14 +66,14 @@ const animationRepository = [
 
 const blueprintRepository = [
   {
-    "animation" : animationRepository[0],
+    "structureType" : "belt1",
 
     "canBePlaced" : [
       "empty"
     ]
   },
   {
-    "animation" : animationRepository[1],
+    "structureType" : "miner1",
 
     "canBePlaced" : [
       "coal"
@@ -109,23 +110,64 @@ const nodeFrames  = new Map<Node, FrameSet>(
   ]
 );
 
+type StructureInitializer = (
+  sprite    : Phaser.GameObjects.Sprite
+) => Structure;
+
 const structureService  = {
+  "structureInitializers" : new Map<string, StructureInitializer>(
+    [
+      [
+        "belt1",
+        (
+          sprite    : Phaser.GameObjects.Sprite
+        ) : Structure =>
+        {
+          // TODO Change to Map, key by animation key
+          const animation = animationRepository[0];
+
+          const animationDuration = animation.duration;
+          const now               = performance.now();
+
+          // timeout of dur - now % dur?
+          sprite.play(
+            animation.key
+          );
+
+          sprite.anims.setProgress(
+            (now / animationDuration) % 1
+          );
+
+          return new Belt1Structure(
+            StructureOrientation.Right,
+            sprite.x / 32,
+            sprite.y / 32
+          );
+        }
+      ],
+      [
+        "miner1",
+        (
+          sprite  : Phaser.GameObjects.Sprite
+        ) : Structure =>
+        {
+          // TODO
+          sprite;
+          return {} as unknown as any;
+        }
+      ]
+    ]
+  ),
+
   placeStructure(
     blueprint : Blueprint,
     sprite    : Phaser.GameObjects.Sprite
-  ) : void
+  ) : Structure
   {
-    const animation = blueprint.animation;
-
-    const animationDuration = animation.duration;
-    const now               = performance.now();
-
-    sprite.play(
-      animation.key
-    );
-
-    sprite.anims.setProgress(
-      (now / animationDuration) % 1
+    return this.structureInitializers.get(
+      blueprint.structureType
+    )!(
+      sprite
     );
   }
 };
@@ -229,13 +271,13 @@ const buildMenuService = {
         buildMenuGroup.setActive(true);
         buildMenuGroup.setVisible(true);
       }
-    }
+    };
 
     buildMenu.close();
 
     return buildMenu;
   }
-}
+};
 
 class Prototype1Scene extends Scene
 {
@@ -266,7 +308,7 @@ class Prototype1Scene extends Scene
       this.nodes.set(i, new Map());
       this.structures.set(i, new Map());
 
-      // Fill the row with randon terrain
+      // Fill the row with random terrain
       for (let j = 0; j < mapWidth; j += 1)
       {
         landscape[i][j] = Math.floor(Math.random() * 3) * 4;
@@ -324,7 +366,7 @@ class Prototype1Scene extends Scene
 
     // Place structures
 
-    let attachSpriteToMouse = (
+    const attachSpriteToMouse = (
       blueprint : Blueprint,
       sprite    : Phaser.GameObjects.Sprite
     ) : () => void =>
@@ -341,6 +383,7 @@ class Prototype1Scene extends Scene
           sprite.x = tileX * 32;
           sprite.y = tileY * 32;
 
+          // TODO Can we make this a "!"?
           const nodeType  = this.nodes.get(tileX)?.get(tileY) || "empty";
 
           if (blueprint.canBePlaced.includes(nodeType))
@@ -371,11 +414,11 @@ class Prototype1Scene extends Scene
           attacher
         );
       };
-    }
+    };
 
     // Objects menu
 
-    let buildMenu = buildMenuService.createMenu(
+    const buildMenu = buildMenuService.createMenu(
       buildMenuEntries,
       this,
       (
@@ -421,9 +464,18 @@ class Prototype1Scene extends Scene
             unattachSprite();
 
             // Spawn in the structure object tied to this sprite
-            structureService.placeStructure(
+            const structure = structureService.placeStructure(
               entry.blueprint,
               structureSprite
+            );
+
+            const tileX = Math.floor(structureSprite.x / 32);
+            const tileY = Math.floor(structureSprite.y / 32);
+
+            placedStructureManager.placeStructure(
+              structure,
+              tileX,
+              tileY
             );
           }
         };
@@ -437,7 +489,7 @@ class Prototype1Scene extends Scene
             this.input.keyboard.once(
               "keydown-ESC",
               cancelPlacement
-            )
+            );
 
             // Place
             this.input.once(
