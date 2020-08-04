@@ -11,6 +11,10 @@
     "watch": "parcel -p 8080 watch src/ui/index.html"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^3.7.1",
+    "@typescript-eslint/parser": "^3.7.1",
+    "eslint": "^7.6.0",
+    "eslint-plugin-import": "^2.22.0",
     "parcel-bundler": "^1.12.4",
     "sass": "^1.26.10",
     "tile-extruder": "^2.0.6",
