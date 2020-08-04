@@ -4,6 +4,8 @@ import {
 
 import BootScene        from "./scenes/boot/index.class";
 import Prototype1Scene  from "./scenes/prototype1/index.class";
+import Prototype2Scene  from "./scenes/prototype2/index.class";
+import Prototype3Scene from "./scenes/prototype3/index.class";
 
 import "./index.scss";
 
@@ -25,6 +27,8 @@ new Game({
 
   "scene" : [
     BootScene,
-    Prototype1Scene
+    Prototype1Scene,
+    Prototype2Scene,
+    Prototype3Scene
   ]
 });
