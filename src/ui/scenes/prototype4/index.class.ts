@@ -56,6 +56,14 @@ interface TickingStructure
 
 type Structure  = (Consumer | NonConsumer) & (TickingStructure | NonTickingStructure);
 
+enum StructureOrientation
+  {
+  Down,
+  Left,
+  Right,
+  Up
+}
+
 interface MaterialProducedEvent
 {
   checkMaterial() : Material;
@@ -180,9 +188,10 @@ class Belt1 implements Consumer, MaterialProducer, TickingStructure
   private materialProducedListeners : MaterialProducedListenerManager;
 
   public constructor(
-    private sprite  : Phaser.GameObjects.Sprite,
-    private tileX   : number,
-    private tileY   : number
+    private orientation : StructureOrientation,
+    private sprite      : Phaser.GameObjects.Sprite,
+    private tileX       : number,
+    private tileY       : number
   ) {
     this.currentMaterial  = null;
 
@@ -201,6 +210,140 @@ class Belt1 implements Consumer, MaterialProducer, TickingStructure
   {
     this.currentMaterial  = material;
   }
+
+  public listenForMaterial(
+    listener  : MaterialProducedListener
+  ) : MaterialProducedListenerRemover
+  {
+    return this.materialProducedListeners.addListener(
+      listener
+    );
+  }
+
+  public tick(
+    _worldTime : DOMHighResTimeStamp,
+    delta     : number
+  ) : void
+  {
+    if (this.currentMaterial)
+    {
+      const materialSprite  = this.currentMaterial.getSprite();
+
+      // TODO Inject
+      const rate      = 16 / 250; // 16 px per 250 ms
+      const movement  = rate * delta;
+
+      let shouldEmit  : boolean;
+
+      let emitX = this.tileX;
+      let emitY = this.tileY;
+
+      if (this.orientation === StructureOrientation.Down)
+      {
+        shouldEmit  = materialSprite.y > this.sprite.y + this.sprite.height / 2;
+
+        if (!shouldEmit)
+        {
+          materialSprite.y  += movement;
+        }
+        else
+        {
+          emitY += 1;
+        }
+      }
+      else if (this.orientation === StructureOrientation.Left)
+      {
+        shouldEmit  = materialSprite.x < this.sprite.x - this.sprite.width / 2;
+
+        if (!shouldEmit)
+        {
+          materialSprite.x  -= movement;
+        }
+        else
+        {
+          emitX -= 1;
+        }
+      }
+      else if (this.orientation === StructureOrientation.Right)
+      {
+        shouldEmit  = materialSprite.x > this.sprite.x + this.sprite.width / 2;
+
+        if (!shouldEmit)
+        {
+          materialSprite.x  += movement;
+        }
+        else
+        {
+          emitX += 1;
+        }
+      }
+      else
+      {
+        shouldEmit  = materialSprite.y < this.sprite.y - this.sprite.height / 2;
+
+        if (!shouldEmit)
+        {
+          materialSprite.y  -= movement;
+        }
+        else
+        {
+          emitY -= 1;
+        }
+      }
+
+      if (shouldEmit)
+      {
+        const event = new StandardMaterialProducedEvent(
+          this.currentMaterial,
+          emitX,
+          emitY
+        );
+
+        this.materialProducedListeners.emitMaterial(
+          event
+        );
+
+        if (event.hasBeenTaken())
+        {
+          this.currentMaterial  = null;
+        }
+      }
+    }
+  }
+}
+
+class Belt1Right implements Consumer, MaterialProducer, TickingStructure
+{
+  public consumer : true  = true;
+  public ticks    : true  = true;
+
+  private currentMaterial : Material | null;
+  private materialProducedListeners : MaterialProducedListenerManager;
+
+  public constructor(
+    private orientation : StructureOrientation,
+    private sprite      : Phaser.GameObjects.Sprite,
+    private tileX       : number,
+    private tileY       : number
+  ) {
+    this.currentMaterial  = null;
+
+    // TODO Inject
+    this.materialProducedListeners  = new MaterialProducedListenerManager();
+  }
+
+  public consumesMaterial() : boolean
+  {
+    return this.currentMaterial === null;
+  }
+
+  public giveMaterial(
+    material  : Material
+  ) : void
+  {
+    this.currentMaterial  = material;
+  }
+
   public listenForMaterial(
     listener  : MaterialProducedListener
   ) : MaterialProducedListenerRemover
@@ -220,12 +363,102 @@ class Belt1 implements Consumer, MaterialProducer, TickingStructure
     {
       const materialSprite  = this.currentMaterial.getSprite();
 
-      if (materialSprite.x > this.sprite.x + this.sprite.width / 2)
+      // TODO Inject
+      const rate      = 16 / 250; // 16 px per 250 ms
+      const movement  = rate * delta;
+
+      let shouldEmit  : boolean;
+
+      let emitX = this.tileX;
+      let emitY = this.tileY;
+
+      if (this.orientation === StructureOrientation.Down)
+      {
+        shouldEmit  = materialSprite.y > this.sprite.y + this.sprite.height / 2;
+
+        if (!shouldEmit)
+        {
+          if (materialSprite.x < this.sprite.x)
+          {
+            materialSprite.x  += movement;
+          }
+          else
+          {
+            materialSprite.y  += movement;
+          }
+        }
+        else
+        {
+          emitY += 1;
+        }
+      }
+      else if (this.orientation === StructureOrientation.Left)
+      {
+        shouldEmit  = materialSprite.x < this.sprite.x - this.sprite.width / 2;
+
+        if (!shouldEmit)
+        {
+          if (materialSprite.y < this.sprite.y)
+          {
+            materialSprite.y  += movement;
+          }
+          else
+          {
+            materialSprite.x  -= movement;
+          }
+        }
+        else
+        {
+          emitX -= 1;
+        }
+      }
+      else if (this.orientation === StructureOrientation.Right)
+      {
+        shouldEmit  = materialSprite.x > this.sprite.x + this.sprite.width / 2;
+
+        if (!shouldEmit)
+        {
+          if (materialSprite.y > this.sprite.y)
+          {
+            materialSprite.y  -= movement;
+          }
+          else
+          {
+            materialSprite.x  += movement;
+          }
+        }
+        else
+        {
+          emitX += 1;
+        }
+      }
+      else
+      {
+        shouldEmit  = materialSprite.y < this.sprite.y - this.sprite.height / 2;
+
+        if (!shouldEmit)
+        {
+          if (materialSprite.x > this.sprite.x)
+          {
+            materialSprite.x  -= movement;
+          }
+          else
+          {
+            materialSprite.y  -= movement;
+          }
+        }
+        else
+        {
+          emitY -= 1;
+        }
+      }
+
+      if (shouldEmit)
       {
         const event = new StandardMaterialProducedEvent(
           this.currentMaterial,
-          this.tileX + 1,
-          this.tileY
+          emitX,
+          emitY
         );
 
         this.materialProducedListeners.emitMaterial(
@@ -236,11 +469,6 @@ class Belt1 implements Consumer, MaterialProducer, TickingStructure
         {
           this.currentMaterial  = null;
         }
-      }
-      else
-      {
-        const rate  = 16 / 250; // 16 px per 250 ms
-        materialSprite.x  += rate * delta;
       }
     }
   }
@@ -307,7 +535,7 @@ class Prototype4Scene extends Scene
 
     this.createLandscape();
 
-    // Add belts
+    // Animations
 
     this.anims.create({
       "duration"  : 250,
@@ -321,9 +549,23 @@ class Prototype4Scene extends Scene
       )
     });
 
-    const belt1 = this.createBelt(4, 4);
-    const belt2 = this.createBelt(5, 4);
-    const belt3 = this.createBelt(6, 4);
+    this.anims.create({
+      "duration"  : 250,
+      "key"       : "belt1Right",
+      "repeat"    : -1,
+      "frames"    : this.anims.generateFrameNumbers(
+        "objects1Tileset",
+        {
+          "frames"  : [24, 25, 26, 27]
+        }
+      )
+    });
+
+    // Add belts
+
+    const belt1 = this.createBelt(StructureOrientation.Right, 4, 4);
+    const belt2 = this.createBelt(StructureOrientation.Right, 5, 4);
+    const belt3 = this.createBelt(StructureOrientation.Right, 6, 4);
 
     this.tickingStructures.push(
       belt1,
@@ -335,14 +577,11 @@ class Prototype4Scene extends Scene
       () : void =>
       {
         this.tickingStructures.push(
-          this.createBelt(7, 4)
+          this.createBelt(StructureOrientation.Right, 7, 4)
         );
 
         belt2.giveMaterial(
-          this.createMaterial(
-            5,
-            4
-          )
+          this.createMaterial(5, 4)
         );
       },
       5000
@@ -352,18 +591,51 @@ class Prototype4Scene extends Scene
       () : void =>
       {
         this.tickingStructures.push(
-          this.createBelt(8, 4)
-        );
-
-        this.tickingStructures.push(
-          this.createBelt(9, 4)
-        );
-
-        this.tickingStructures.push(
-          this.createBelt(10, 4)
+          this.createBelt(StructureOrientation.Right, 8, 4),
+          this.createBelt(StructureOrientation.Right, 9, 4),
+          this.createBelt(StructureOrientation.Right, 10, 4)
         );
       },
       7000
+    );
+
+    setTimeout(
+      ()  : void =>
+      {
+        this.tickingStructures.push(
+          this.createBelt(StructureOrientation.Right, 11, 4),
+          this.createRightBelt(StructureOrientation.Down, 12, 4),
+          this.createBelt(StructureOrientation.Down, 12, 5)
+        );
+      },
+      10000
+    );
+
+    setTimeout(
+      ()  : void =>
+      {
+        this.tickingStructures.push(
+          this.createBelt(StructureOrientation.Down, 12, 6),
+          this.createBelt(StructureOrientation.Down, 12, 7),
+          this.createBelt(StructureOrientation.Down, 12, 8),
+          this.createRightBelt(StructureOrientation.Left, 12, 9),
+          this.createBelt(StructureOrientation.Left, 11, 9),
+          this.createBelt(StructureOrientation.Left, 10, 9),
+          this.createBelt(StructureOrientation.Left, 9, 9),
+          this.createBelt(StructureOrientation.Left, 8, 9),
+          this.createBelt(StructureOrientation.Left, 7, 9),
+          this.createBelt(StructureOrientation.Left, 6, 9),
+          this.createBelt(StructureOrientation.Left, 5, 9),
+          this.createBelt(StructureOrientation.Left, 4, 9),
+          this.createRightBelt(StructureOrientation.Up, 3, 9),
+          this.createBelt(StructureOrientation.Up, 3, 8),
+          this.createBelt(StructureOrientation.Up, 3, 7),
+          this.createBelt(StructureOrientation.Up, 3, 6),
+          this.createBelt(StructureOrientation.Up, 3, 5),
+          this.createRightBelt(StructureOrientation.Right, 3, 4)
+        );
+      },
+      12000
     );
 
     // Add material
@@ -398,11 +670,11 @@ class Prototype4Scene extends Scene
   }
 
   public createBelt(
-    x : number,
-    y : number
+    orientation : StructureOrientation,
+    x           : number,
+    y           : number
   ) : Belt1
   {
-
     const beltSprite  = this.add.sprite(
       x * 32,
       y * 32,
@@ -414,7 +686,21 @@ class Prototype4Scene extends Scene
       "belt1"
     );
 
+    if (orientation === StructureOrientation.Down)
+    {
+      beltSprite.rotation = Math.PI / 2;
+    }
+    else if (orientation === StructureOrientation.Left)
+    {
+      beltSprite.rotation = -Math.PI;
+    }
+    else if (orientation === StructureOrientation.Up)
+    {
+      beltSprite.rotation = Math.PI / -2;
+    }
+
     const belt  = new Belt1(
+      orientation,
       beltSprite,
       x,
       y
@@ -431,8 +717,6 @@ class Prototype4Scene extends Scene
         event : MaterialProducedEvent
       ) : void =>
       {
-        console.log("material notification received:", event);
-
         // TODO Inject placedStructureManager
         const possibleConsumer  = placedStructureManager.getStructureAt(
           event.getX(),
@@ -443,7 +727,72 @@ class Prototype4Scene extends Scene
           possibleConsumer?.consumer &&
           possibleConsumer.consumesMaterial(event.checkMaterial())
         ) {
-          console.log("handed over material to adjacent consumer");
+          possibleConsumer.giveMaterial(event.takeMaterial());
+        }
+      }
+    );
+
+    return belt;
+  }
+
+  public createRightBelt(
+    orientation : StructureOrientation,
+    x           : number,
+    y           : number
+  ) : Belt1Right
+  {
+    const beltSprite  = this.add.sprite(
+      x * 32,
+      y * 32,
+      "objects1Tileset",
+      24
+    );
+
+    beltSprite.play(
+      "belt1Right"
+    );
+
+    if (orientation === StructureOrientation.Left)
+    {
+      beltSprite.rotation = Math.PI / 2;
+    }
+    else if (orientation === StructureOrientation.Up)
+    {
+      beltSprite.rotation = -Math.PI;
+    }
+    else if (orientation === StructureOrientation.Right)
+    {
+      beltSprite.rotation = Math.PI / -2;
+    }
+
+    const belt  = new Belt1Right(
+      orientation,
+      beltSprite,
+      x,
+      y
+    );
+
+    placedStructureManager.placeStructure(
+      belt,
+      x,
+      y
+    );
+
+    belt.listenForMaterial(
+      (
+        event : MaterialProducedEvent
+      ) : void =>
+      {
+        // TODO Inject placedStructureManager
+        const possibleConsumer  = placedStructureManager.getStructureAt(
+          event.getX(),
+          event.getY()
+        );
+
+        if (
+          possibleConsumer?.consumer &&
+          possibleConsumer.consumesMaterial(event.checkMaterial())
+        ) {
           possibleConsumer.giveMaterial(event.takeMaterial());
         }
       }
