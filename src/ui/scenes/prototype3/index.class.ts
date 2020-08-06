@@ -252,6 +252,7 @@ const manualMinerStructureFactory  = {
         console.log("material notification received:", event);
 
         // TODO Inject placedStructureManager
+        // TODO Orientation
         const possibleConsumer  = placedStructureManager.getStructureAt(
           tileX,
           tileY + 1
