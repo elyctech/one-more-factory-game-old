@@ -531,6 +531,10 @@ class Prototype4Scene extends Scene
 
   public create() : void
   {
+    // Instructions
+
+    this.createInstructions();
+
     // Landscape
 
     this.createLandscape();
@@ -813,6 +817,26 @@ class Prototype4Scene extends Scene
         delta
       );
     }
+  }
+
+  public createInstructions() : void
+  {
+    // Instructions
+
+    this.add.rectangle(
+      this.scale.width - 100,
+      12,
+      200,
+      24,
+      0x000000,
+      0.6
+    ).setDepth(10);
+
+    this.add.text(
+      this.scale.width - 190,
+      0,
+      "Wait for it..."
+    ).setDepth(10);
   }
 
   public createLandscape() : void
