@@ -7,6 +7,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "build": "parcel build src/ui/index.html",
     "extrude": "node scripts/extrude.js",
     "watch": "parcel -p 8080 watch src/ui/index.html"
   },
