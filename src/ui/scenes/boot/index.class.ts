@@ -49,7 +49,7 @@ class BootScene extends Scene
 
   public create() : void
   {
-    this.scene.start("prototype4");
+    this.scene.start("title");
   }
 }
 
