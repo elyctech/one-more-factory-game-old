@@ -50,14 +50,14 @@ interface BuildMenu
 const animationRepository = [
   {
     "duration"  : 250,
-    "frames"    : [0, 8, 16, 24],
+    "frames"    : [0, 1, 2, 3],
     "key"       : "belt1",
     "repeat"    : -1,
     "texture"   : "objects1Tileset"
   },
   {
     "duration"  : 0,
-    "frames"    : [32],
+    "frames"    : [4],
     "key"       : "miner1",
     "repeat"    : 0,
     "texture"   : "objects1Tileset"
@@ -89,7 +89,7 @@ const buildMenuEntries  = [
   },
   {
     "blueprint" : blueprintRepository[1],
-    "frame"     : 32,
+    "frame"     : 4,
     "texture"   : "objects1Tileset"
   }
 ] as BuildMenuEntry[];
@@ -289,8 +289,43 @@ class Prototype1Scene extends Scene
     super("prototype1");
   }
 
-  public create()
+  public create() : void
   {
+    // Instructions
+
+    this.add.rectangle(
+      this.scale.width - 180,
+      48,
+      360,
+      96,
+      0x000000,
+      0.6
+    ).setDepth(10);
+
+    this.add.text(
+      this.scale.width - 350,
+      0,
+      "Press [ to bring up build menu."
+    ).setDepth(10);
+
+    this.add.text(
+      this.scale.width - 350,
+      24,
+      "Structures will be transparent on"
+    ).setDepth(10);
+
+    this.add.text(
+      this.scale.width - 350,
+      48,
+      "tiles they cannot be placed. They"
+    ).setDepth(10);
+
+    this.add.text(
+      this.scale.width - 350,
+      72,
+      "turn opaque when they can be placed."
+    ).setDepth(10);
+
     // Landscape
 
     const mapHeight = 32;
@@ -476,6 +511,27 @@ class Prototype1Scene extends Scene
               structure,
               tileX,
               tileY
+            );
+
+            // Fun little message!
+
+            const plop  = this.add.text(
+              structureSprite.x,
+              structureSprite.y - 16,
+              "Plop!"
+            );
+
+            setInterval(
+              () => plop.y -= 1,
+              1000 / 32
+            );
+
+            setTimeout(
+              () : void =>
+              {
+                plop.destroy();
+              },
+              750
             );
           }
         };
