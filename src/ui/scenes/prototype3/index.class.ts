@@ -232,7 +232,7 @@ const manualMinerStructureFactory  = {
       sceneX,
       sceneY,
       "objects1Tileset",
-      24
+      4
     );
 
     sprite.setInteractive();
@@ -240,7 +240,31 @@ const manualMinerStructureFactory  = {
     // When the manual miner is clicked, emit a material
     sprite.on(
       "pointerdown",
-      () => manualMiner.emitMaterial()
+      ()  : void =>
+      {
+        // Fun little message!
+
+        const thereYaGo  = scene.add.text(
+          sprite.x - 48,
+          sprite.y - 16,
+          "There ya go!"
+        );
+
+        setInterval(
+          () => thereYaGo.y -= 1,
+          1000 / 32
+        );
+
+        setTimeout(
+          () : void =>
+          {
+            thereYaGo.destroy();
+          },
+          750
+        );
+
+        manualMiner.emitMaterial();
+      }
     );
 
     // For testing just show a message confiriming this click works
@@ -249,8 +273,6 @@ const manualMinerStructureFactory  = {
         event : MaterialProducedEvent
       ) : void =>
       {
-        console.log("material notification received:", event);
-
         // TODO Inject placedStructureManager
         // TODO Orientation
         const possibleConsumer  = placedStructureManager.getStructureAt(
@@ -262,7 +284,6 @@ const manualMinerStructureFactory  = {
           possibleConsumer?.consumer &&
           possibleConsumer.consumesMaterial(event.checkMaterial())
         ) {
-          console.log("handed over material to adjacent consumer");
           possibleConsumer.giveMaterial(event.takeMaterial());
         }
       }
@@ -287,7 +308,7 @@ class ManualAssembler implements Consumer
     material  : Material
   ) : void
   {
-    console.log("Thanks for the ", material);
+    material;
   }
 }
 
@@ -306,7 +327,7 @@ const manualAssemblerStructureFactory  = {
       sceneX,
       sceneY,
       "objects1Tileset",
-      25
+      5
     );
 
     return manualAssembler;
@@ -371,6 +392,10 @@ class Prototype3Scene extends Scene
 
   public create() : void
   {
+    // Instructions
+
+    this.createInstructions();
+
     // Landscape
 
     this.createLandscape();
@@ -412,6 +437,38 @@ class Prototype3Scene extends Scene
       4,
       4
     );
+  }
+
+  public createInstructions() : void
+  {
+    // Instructions
+
+    this.add.rectangle(
+      this.scale.width - 190,
+      36,
+      380,
+      72,
+      0x000000,
+      0.6
+    ).setDepth(10);
+
+    this.add.text(
+      this.scale.width - 370,
+      0,
+      "Click on the miner to emit a material."
+    ).setDepth(10);
+
+    this.add.text(
+      this.scale.width - 370,
+      24,
+      "The assembler will accept the material"
+    ).setDepth(10);
+
+    this.add.text(
+      this.scale.width - 370,
+      48,
+      "automatically."
+    ).setDepth(10);
   }
 
   public createLandscape() : void
