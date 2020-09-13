@@ -11,7 +11,8 @@ class StandardMaterial implements Material
 {
   public constructor(
     private sprite  : Phaser.GameObjects.Sprite
-  ) {
+  ) 
+  {
 
   }
 
@@ -85,7 +86,8 @@ class StandardMaterialProducedEvent implements MaterialProducedEvent
     private material  : Material,
     private x         : number,
     private y         : number
-  ) {
+  ) 
+  {
     this.beenTaken  = false;
   }
 
@@ -192,7 +194,8 @@ class Belt1 implements Consumer, MaterialProducer, TickingStructure
     private sprite      : Phaser.GameObjects.Sprite,
     private tileX       : number,
     private tileY       : number
-  ) {
+  ) 
+  {
     this.currentMaterial  = null;
 
     // TODO Inject
@@ -325,7 +328,8 @@ class Belt1Right implements Consumer, MaterialProducer, TickingStructure
     private sprite      : Phaser.GameObjects.Sprite,
     private tileX       : number,
     private tileY       : number
-  ) {
+  ) 
+  {
     this.currentMaterial  = null;
 
     // TODO Inject
@@ -730,7 +734,8 @@ class Prototype4Scene extends Scene
         if (
           possibleConsumer?.consumer &&
           possibleConsumer.consumesMaterial(event.checkMaterial())
-        ) {
+        ) 
+        {
           possibleConsumer.giveMaterial(event.takeMaterial());
         }
       }
@@ -796,7 +801,8 @@ class Prototype4Scene extends Scene
         if (
           possibleConsumer?.consumer &&
           possibleConsumer.consumesMaterial(event.checkMaterial())
-        ) {
+        ) 
+        {
           possibleConsumer.giveMaterial(event.takeMaterial());
         }
       }

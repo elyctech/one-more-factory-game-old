@@ -26,6 +26,10 @@
         "before": true
       }
     ],
+    "brace-style": [
+      "error",
+      "allman"
+    ],
     "linebreak-style": [
       "error",
       "unix"
