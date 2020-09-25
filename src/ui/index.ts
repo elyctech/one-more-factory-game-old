@@ -7,6 +7,7 @@ import Prototype1Scene  from "./scenes/prototype1/index.class";
 import Prototype2Scene  from "./scenes/prototype2/index.class";
 import Prototype3Scene  from "./scenes/prototype3/index.class";
 import Prototype4Scene  from "./scenes/prototype4/index.class";
+import Prototype5Scene  from "./scenes/prototype5/index.class";
 import TitleScene       from "./scenes/title/index.class";
 
 import "./index.scss";
@@ -33,6 +34,7 @@ new Game({
     Prototype2Scene,
     Prototype3Scene,
     Prototype4Scene,
+    Prototype5Scene,
     TitleScene
   ]
 });
